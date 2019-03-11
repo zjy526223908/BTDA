@@ -181,11 +181,11 @@ try:
             c_lr = args.lr*(1+gamma*iter_count)**(-power)
             
             #set optim
-            optim_net = optim.SGD([{'params':my_net.feature.parameters(),             'lr':c_lr},
+            optim_net = optim.SGD([{'params':my_net.feature.parameters(),          'lr':c_lr},
                                 {'params':my_net.bottleneck.parameters(),          'lr':c_lr*10.0},
                                 {'params':my_net.class_classifier.parameters(),    'lr':c_lr*10.0},
                                 {'params':my_net.domain_classifier.parameters(),   'lr':c_lr*10.0},
-                                {'params':my_net.dc_ip3_d1.parameters(),              'lr':c_lr*10.0},
+                                {'params':my_net.dc_ip3_d1.parameters(),           'lr':c_lr*10.0},
                                 {'params':my_net.dc_ip3_d2.parameters(),           'lr':c_lr*10.0}
                                 ], lr=c_lr, momentum=0.9)
             
@@ -220,10 +220,6 @@ try:
             labels = torch.unsqueeze(labels, 1)
             Adversarial_DA_loss = loss_domain(domain_output, labels)
             #calculate Vst
-            if args.dataset_name == "OfficeHome":
-                args.lambda_val = 1.0
-            else:
-                args.lambda_val = 0.1
             Vst = Classification_loss + args.lambda_val * Adversarial_DA_loss
         
             t_class_output,_, domain_output_mt,_ = my_net(t_imgs,alpha=alpha)
@@ -236,28 +232,22 @@ try:
                 t_labels = t_labels.float()
                 Vmt = loss_domain(domain_output_mt, t_labels)
             #calculate Lent
-            if args.dataset_name == "OfficeHome":
-                args.beta_val = 0.1
-            else:
-                args.beta_val = 0.01
             Lent = loss_entropy(t_class_output)
             #calculate Lvir
-            
             vat_loss = VATLoss(xi=10.0, eps=1.0, ip=1)
-            Lvir = vat_loss(my_net,s_imgs)             
+            Lvir = vat_loss(my_net,s_imgs)
+
             
-            if args.dataset_name == "OfficeHome":
-                args.gamma_val = float(iter_count*1.0) / (args.max_iter)
-            else:
-                args.gamma_val = 0.01
+            
+            args.gamma_val = float(iter_count*1.0) / (args.max_iter)
+
             
             
             
             loss = Vst + args.gamma_val*Vmt + args.beta_val*Lent + Lvir 
             loss.backward()
             optim_net.step()              
-            
-            
+             
             if iter_count%10 == 0:
                 tqdm.write("iter is : {}  Classification loss is :{:.3f} Lent is :{:.3f}  Adversarial DA loss is :{:.3f} Vmt is:{:.3f} gamma_val is:{:.3f}".format(iter_count,Classification_loss.item(),\
                     Lent.item(), Adversarial_DA_loss.item(),Vmt.item(), args.gamma_val))
@@ -275,12 +265,16 @@ try:
                     
             # Meta-update     
             if (iter_count%args.update_meta_iter == 0)and(iter_count>1):
+                del class_output, Classification_loss, domain_output 
+                del Adversarial_DA_loss, t_class_output, domain_output_mt, Vmt, Lent, Lvir, loss
                 torch.save(my_net.state_dict(), args.snapshot_model_name)
                 dataloader_cluster_label = update_teacher(dataloader_no_shuffle,parser)
                 t_loader = iter(dataloader_cluster_label)
                 
             
-            if (iter_count%args.test_iter == 0)and(iter_count>1):        
+            if (iter_count%args.test_iter == 0)and(iter_count>1):       
+                del class_output, Classification_loss, domain_output 
+                del Adversarial_DA_loss, t_class_output, domain_output_mt, Vmt, Lent, Lvir, loss
                 torch.save(my_net.state_dict(), args.snapshot_model_name)
                 args.tmp_accuracy = test_model(t_loader_test,iter_count,args)
                 
@@ -299,6 +293,7 @@ except KeyboardInterrupt:
     pbar.close()
     raise
 pbar.close()          
+del my_net
 print ("max accuracy is : ",str(args.max_accuracy))          
 print ("max equal weight accuracy is : ",str(test_model_equal_weight(args)))            
 shutil.copy(args.snapshot_max_accuracy_model_name,\
