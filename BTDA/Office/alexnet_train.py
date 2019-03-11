@@ -44,7 +44,7 @@ parser.add_argument("--lambda_val", help="set lambda value", type=int, default= 
 parser.add_argument("--gamma_val", help="set gamma value", type=int, default= 0.01)
 parser.add_argument("--rho_val", help="set rho value", type=int, default= 0.01)
 parser.add_argument("--is_initialize", help="whether initialize cluster labels or use provided cluster labels", type=int,default=0)
-parser.add_argument("--data_root", help="set dataset file", default=('dataset/'+parser.parse_args().dataset_name+'/imgs'))
+parser.add_argument("--data_root", help="set dataset file", default=('dataset/'+parser.parse_args().dataset_name+'/imgs/'))
 parser.add_argument("--task_name", help="generate this task's name", \
     default= parser.parse_args().source_name+'_2_all')
 parser.add_argument("--snapshot_file", help="generate folder to save models and result", \
