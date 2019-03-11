@@ -242,12 +242,9 @@ try:
                 args.beta_val = 0.01
             Lent = loss_entropy(t_class_output)
             #calculate Lvir
-            if args.dataset_name == "OfficeHome":
-                vat_loss = VATLoss(xi=10.0, eps=1.0, ip=1)
-                Lvir = vat_loss(my_net,s_imgs)
-            else:
-                vat_loss = VATLoss(xi=10.0, eps=1.0, ip=1)
-                Lvir = vat_loss(my_net,s_imgs)             
+            
+            vat_loss = VATLoss(xi=10.0, eps=1.0, ip=1)
+            Lvir = vat_loss(my_net,s_imgs)             
             
             if args.dataset_name == "OfficeHome":
                 args.gamma_val = float(iter_count*1.0) / (args.max_iter)
