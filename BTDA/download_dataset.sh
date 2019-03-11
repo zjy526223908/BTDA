@@ -23,6 +23,7 @@ curl -b ./cookie.txt -L -o ${filename} $url
 
 unzip -o -d Office/dataset/OfficeHome/ OfficeHome.zip
 mv Office/dataset/OfficeHome/OfficeHomeDataset_10072016/* Office/dataset/OfficeHome/imgs/
+mv Office/dataset/OfficeHome/imgs/Real\ World Office/dataset/OfficeHome/imgs/Real_World
 
 filename="Office31.tar"
 file_id="12qxRlmjimscPCjLvleYDSU3hRU3GBCfW"
