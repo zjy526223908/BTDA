@@ -41,3 +41,6 @@ python alexnet_train.py --dataset_name OfficeHome --source_name A --gpu_id 0
 
 python resnet_train.py  --dataset_name OfficeHome --source_name A --gpu_id 0
 
+## some result modles
+alexnet amazon->webcam,dslr acc:74.6 https://drive.google.com/open?id=1_6KGKGfhNJkOo5j0p154FQKCIavrrrpr
+resnet  amazon->webcam,dslr acc:90.1 https://drive.google.com/open?id=1UGMjGaaHKQvEAGLGym0R-fQyQIeOkjOa
