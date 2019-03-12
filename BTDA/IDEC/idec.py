@@ -374,9 +374,6 @@ def initialize_office_meta_learner(parser):
         dataset = Image_Dataset(idec_args.image_npz_file)  
         for i in tqdm(range(20)):    
             train_idec(idec_args,dataset)
-        print ("min_difference is :",str(idec_args.min_difference))
-        print ("min_difference_acc is :",str(idec_args.min_difference_acc))
-        sys.exit()
     
 def update_office_meta_learner(parser):
     idec_parser = argparse.ArgumentParser(
@@ -412,14 +409,17 @@ def update_office_meta_learner(parser):
             idec_args.n_clusters = 3
             idec_args.n_z = 3
             idec_args.n_input = 4096*2+65+64*64*3
-            dataset = Image_Dataset(idec_args.image_npz_update_file)     
+            dataset = Image_Dataset(idec_args.image_npz_update_file)    
+            train_idec(idec_args,dataset)        
         else:
-            idec_args.pretrain_epoch = 50
+            idec_args.pretrain_epoch = 2
             idec_args.train_epoch = 20
             idec_args.n_clusters = 2
             idec_args.n_z = 2
             idec_args.n_input = 4096*2+31+64*64*3
             dataset = Image_Dataset(idec_args.image_npz_update_file)  
+            for i in tqdm(range(5)):    
+                train_idec(idec_args,dataset)      
     else:        
         if idec_args.dataset_name == "OfficeHome":
             idec_args.pretrain_epoch = 50
@@ -428,12 +428,14 @@ def update_office_meta_learner(parser):
             idec_args.n_z = 3
             idec_args.n_input = 4096+65+64*64*3
             dataset = Image_Dataset(idec_args.image_npz_update_file)     
+            train_idec(idec_args,dataset)    
         else:
-            idec_args.pretrain_epoch = 50
+            idec_args.pretrain_epoch = 2
             idec_args.train_epoch = 20
             idec_args.n_clusters = 2
             idec_args.n_z = 2
-            idec_args.n_input = 4096+31+64*64*3
-            dataset = Image_Dataset(idec_args.image_npz_update_file)     
-            
-    train_idec(idec_args,dataset)    
+            idec_args.n_input = 4096*2+31+64*64*3
+            dataset = Image_Dataset(idec_args.image_npz_update_file)  
+            for i in tqdm(range(5)):    
+                train_idec(idec_args,dataset)       
+    
