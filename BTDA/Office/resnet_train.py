@@ -79,13 +79,15 @@ loss_class = torch.nn.CrossEntropyLoss().cuda()
 loss_domain = torch.nn.BCEWithLogitsLoss().cuda()
 
 
- 
-
-cuda = True
-cudnn.benchmark = True
-manual_seed = random.randint(1, 10000)
-random.seed(manual_seed)
-torch.manual_seed(manual_seed)
+if args.dataset_name == "Office31":
+    args.update_meta_iter = 4000
+    args.test_iter = 20
+else:
+    cuda = True
+    cudnn.benchmark = True
+    manual_seed = random.randint(1, 10000)
+    random.seed(manual_seed)
+    torch.manual_seed(manual_seed)
  
 # creat snapshot
 
@@ -265,16 +267,12 @@ try:
                     
             # Meta-update     
             if (iter_count%args.update_meta_iter == 0)and(iter_count>1):
-                del class_output, Classification_loss, domain_output 
-                del Adversarial_DA_loss, t_class_output, domain_output_mt, Vmt, Lent, Lvir, loss
                 torch.save(my_net.state_dict(), args.snapshot_model_name)
                 dataloader_cluster_label = update_teacher(dataloader_no_shuffle,parser)
                 t_loader = iter(dataloader_cluster_label)
                 
             
             if (iter_count%args.test_iter == 0)and(iter_count>1):       
-                del class_output, Classification_loss, domain_output 
-                del Adversarial_DA_loss, t_class_output, domain_output_mt, Vmt, Lent, Lvir, loss
                 torch.save(my_net.state_dict(), args.snapshot_model_name)
                 args.tmp_accuracy = test_model(t_loader_test,iter_count,args)
                 
